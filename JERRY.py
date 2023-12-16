@@ -99,8 +99,8 @@ if st.button("Fetch and Generate Excel"):
 
         # Generate the Excel file
         excel_file = BytesIO()
-        with pd.ExcelWriter(excel_file, engine='openpyxl', index=False) as writer:
-            df.to_excel(writer, sheet_name='Sheet1')
+        with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sheet1', index=False)
 
         excel_file.seek(0)
 
