@@ -4,6 +4,7 @@ import email
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
+from openpyxl import Workbook
 import base64
 
 # Streamlit app title
@@ -97,16 +98,22 @@ if st.button("Fetch and Generate Excel"):
         df = pd.DataFrame(info_list)
 
         # Generate the Excel file
+        excel_file_path = 'EXPO_leads.xlsx'
+        with pd.ExcelWriter(excel_file_path, engine='openpyxl') as writer:
+            writer.book = Workbook()
+            writer.sheets = {ws.title: ws for ws in writer.book.worksheets}
+            df.to_excel(writer, index=False, sheet_name='Sheet1')
+
         st.write("Data extracted from emails:")
         st.write(df)
 
         if st.button("Download Excel File"):
-            df.to_excel('EXPO_leads.xlsx', index=False, engine='openpyxl')
-            with open('EXPO_leads.xlsx', 'rb') as file:
+            with open(excel_file_path, 'rb') as file:
                 st.download_button(
                     label="Click to download Excel file",
                     data=file,
-                    key='download-excel'
+                    key='download-excel',
+                    file_name='EXPO_leads.xlsx'
                 )
 
         st.success("Excel file has been generated and is ready for download.")
