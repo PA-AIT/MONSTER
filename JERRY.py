@@ -10,43 +10,14 @@ from io import BytesIO
 st.header("Developed by MKSSS-AIT")
 st.title("Automate2Excel: Simplified Data Transfer")
 
-# Create input fields for the user and password
+# Create input fields for the user, password, and mail address
 user = st.text_input("Enter your email address")
 password = st.text_input("Enter your email password", type="password")
+mail_address = st.text_input("Enter the mail address from which you want to extract information")
 
 # Function to extract information from HTML content
 def extract_info_from_html(html_content):
-    soup = BeautifulSoup(html_content, 'html.parser')
-    name_element = soup.find(string=re.compile(r'Name', re.IGNORECASE))
-    email_element = soup.find(string=re.compile(r'Email', re.IGNORECASE))
-    workshop_element = soup.find(string=re.compile(r'Workshop Detail', re.IGNORECASE))
-    date_element = soup.find(string=re.compile(r'Date', re.IGNORECASE))
-    mobile_element = soup.find(string=re.compile(r'Mobile No\.', re.IGNORECASE))
-
-    info = {
-        "Name": None,
-        "Email": None,
-        "Workshop Detail": None,
-        "Date": None,
-        "Mobile No.": None
-    }
-
-    if name_element:
-        info["Name"] = name_element.find_next('td').get_text().strip()
-
-    if email_element:
-        info["Email"] = email_element.find_next('td').get_text().strip()
-
-    if workshop_element:
-        info["Workshop Detail"] = workshop_element.find_next('td').get_text().strip()
-
-    if date_element:
-        info["Date"] = date_element.find_next('td').get_text().strip()
-
-    if mobile_element:
-        info["Mobile No."] = mobile_element.find_next('td').get_text().strip()
-
-    return info
+    # ... (unchanged)
 
 if st.button("Fetch and Generate Excel"):
     try:
@@ -64,7 +35,7 @@ if st.button("Fetch and Generate Excel"):
 
         # Define the key and value for email search
         key = 'FROM'
-        value = 'info@mkssscareerguidanceexpo.com'
+        value = mail_address  # Use the specified mail address
         _, data = my_mail.search(None, key, value)
 
         mail_id_list = data[0].split()
@@ -73,21 +44,7 @@ if st.button("Fetch and Generate Excel"):
 
         # Iterate through messages and extract information from HTML content
         for num in mail_id_list:
-            typ, data = my_mail.fetch(num, '(RFC822)')
-            msg = email.message_from_bytes(data[0][1])
-
-            for part in msg.walk():
-                if part.get_content_type() == 'text/html':
-                    html_content = part.get_payload(decode=True).decode('utf-8')
-                    info = extract_info_from_html(html_content)
-
-                    # Extract and add the received date
-                    date = msg["Date"]
-                    info["Received Date"] = date
-                    
-
-
-                    info_list.append(info)
+            # ... (unchanged)
 
         # Create a DataFrame from the info_list
         df = pd.DataFrame(info_list)
