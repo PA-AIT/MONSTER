@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 import re
 import pandas as pd
 import base64
-from io import BytesIO
 
 # Streamlit app title
 st.title("Automate2Excel: Simplified Data Transfer")
@@ -98,24 +97,17 @@ if st.button("Fetch and Generate Excel"):
         df = pd.DataFrame(info_list)
 
         # Generate the Excel file
-        excel_file = BytesIO()
-        with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='Sheet1', index=False)
-
-        excel_file.seek(0)
-
-        # Download Excel file
         st.write("Data extracted from emails:")
         st.write(df)
 
         if st.button("Download Excel File"):
-            st.download_button(
-                label="Click to download Excel file",
-                data=excel_file,
-                key='download-excel',
-                file_name='EXPO_leads.xlsx',
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
+            df.to_excel('EXPO_leads.xlsx', index=False, engine='openpyxl')
+            with open('EXPO_leads.xlsx', 'rb') as file:
+                st.download_button(
+                    label="Click to download Excel file",
+                    data=file,
+                    key='download-excel'
+                )
 
         st.success("Excel file has been generated and is ready for download.")
 
